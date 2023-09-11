@@ -10,7 +10,6 @@ import javax.swing.JRadioButton;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import sos_game_sprint3.Board;
 import sos_game_sprint3.GUI;

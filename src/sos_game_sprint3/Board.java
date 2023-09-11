@@ -2,7 +2,6 @@ package sos_game_sprint3;
 
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 
 public class Board {
 	public enum Cell{E,S,O}

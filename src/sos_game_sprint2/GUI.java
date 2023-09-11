@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -382,16 +381,14 @@ public class GUI extends JFrame {
 		}
 		
 		//test draw red win line
-		private void drawWinLines(Graphics g) {
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-			g2d.setColor(Color.red);
-			int x1 = 1 * CELL_SIZE + CELL_SIZE/2;
-			int y1 = 1 * CELL_SIZE + CELL_SIZE/2;
-			int x2 = 3 * CELL_SIZE + CELL_SIZE/2;
-			int y2 = 3 * CELL_SIZE + CELL_SIZE/2;
-			g2d.drawLine(x1, y1, x2, y2);
-		}
+		/*
+		 * private void drawWinLines(Graphics g) { Graphics2D g2d = (Graphics2D)g;
+		 * g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND,
+		 * BasicStroke.JOIN_ROUND)); g2d.setColor(Color.red); int x1 = 1 * CELL_SIZE +
+		 * CELL_SIZE/2; int y1 = 1 * CELL_SIZE + CELL_SIZE/2; int x2 = 3 * CELL_SIZE +
+		 * CELL_SIZE/2; int y2 = 3 * CELL_SIZE + CELL_SIZE/2; g2d.drawLine(x1, y1, x2,
+		 * y2); }
+		 */
 
 	}
 	
