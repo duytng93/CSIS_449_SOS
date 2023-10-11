@@ -40,6 +40,8 @@ public class GUI extends JFrame {
 	JTextField boardSizeField;
 	JButton newGameButton;
 	JLabel announcementLabel;
+	JRadioButton simpleGameRadio;
+	JRadioButton generalGameRadio;
 	
 	//westPanel components
 	private JPanel westPanel;
@@ -63,11 +65,15 @@ public class GUI extends JFrame {
 		this.board = board;
 		setContentPane();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack(); 
+		
 		setTitle("GAME TIME!");
 		setVisible(true); 
+		pack(); 
+		this.setLocationRelativeTo(null);
+		
 //		System.out.println(northPanel.getSize());
 //		System.out.println(westPanel.getSize());
+		
 	}
 	
 //	public Board getBoard(){
@@ -116,9 +122,9 @@ public class GUI extends JFrame {
 		JLabel gameName = new JLabel("SOS");
 		gameName.setFont(new Font(gameName.getFont().getFamily(), Font.ITALIC,20));
 		
-		JRadioButton simpleGameRadio = new JRadioButton("Simple Game",true);
+		simpleGameRadio = new JRadioButton("Simple Game");
 		simpleGameRadio.addActionListener((e)->{board.gameType = GameType.Simple;});
-		JRadioButton generalGameRadio = new JRadioButton("General Game");
+		generalGameRadio = new JRadioButton("General Game",true);
 		generalGameRadio.addActionListener((e)->{board.gameType = GameType.General;});
 		ButtonGroup gameTypeGroup = new ButtonGroup();
 		gameTypeGroup.add(simpleGameRadio);
@@ -135,9 +141,9 @@ public class GUI extends JFrame {
 				if(!"".equals(boardSizeField.getText())) {
 					try {
 						int newSize = Integer.parseInt(boardSizeField.getText());
-						if(newSize<5) {
+						if(newSize<5 || newSize >17) {
 							//JOptionPane.showMessageDialog(null, "Please choose a number greater or equal 5!", "Board size too small",JOptionPane.INFORMATION_MESSAGE );
-							showMessage("Please enter a number greater than or equal 5!", true);
+							showMessage("Please enter a number from 5 to 17!", true);
 						}else {
 							board.setSize(newSize);
 							board.initBoard();
@@ -150,6 +156,7 @@ public class GUI extends JFrame {
 							westPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,verticalGap));
 							eastPanel.setPreferredSize(new Dimension(150,CELL_SIZE * board.getBoardSize()));
 							eastPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,verticalGap));
+							
 							showMessage("Let's play!",false);
 //							System.out.println(getWidth());
 //							System.out.print(getHeight());
@@ -174,6 +181,8 @@ public class GUI extends JFrame {
 						S2.setSelected(true);
 						turnLabel.setBackground(Color.blue);
 						board.isPlaying = false;
+						simpleGameRadio.setEnabled(true);
+						generalGameRadio.setEnabled(true);
 						changeSize();
 					}
 				}else changeSize();
@@ -313,9 +322,9 @@ public class GUI extends JFrame {
 						turnLabel.setBackground(Color.blue);
 					else
 						turnLabel.setBackground(Color.red);
-//					System.out.println(rowSelected + "  " + colSelected);
-//					System.out.println(e.getX() + "  "+e.getY());
-//					System.out.println(board.getCell(rowSelected,colSelected));
+					
+					simpleGameRadio.setEnabled(false);
+					generalGameRadio.setEnabled(false);
 				repaint(); 
 			}
 			});

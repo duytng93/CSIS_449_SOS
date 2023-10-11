@@ -32,7 +32,7 @@ public class TestClickOnGameBoard {
 			Robot robot = new Robot();  
 			mainFrame.getO2().setSelected(true);
 			Thread.sleep(500);
-			robot.mouseMove(276, 184); // cell  1,2
+			robot.mouseMove(mainFrame.getX()+276,mainFrame.getY() + 184); // cell  1,2
 			Thread.sleep(500);
 			robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
@@ -41,7 +41,7 @@ public class TestClickOnGameBoard {
             assertEquals(2,mainFrame.getGameBoard().getColSelected());
             assertEquals(Cell.O, board.getCell(mainFrame.getGameBoard().getRowSelected(), mainFrame.getGameBoard().getColSelected()));
 			
-			robot.mouseMove(347, 256); // cell  3,3
+			robot.mouseMove(mainFrame.getX()+347, mainFrame.getY()+256); // cell  3,3
 			Thread.sleep(500);
 			robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
@@ -50,7 +50,7 @@ public class TestClickOnGameBoard {
             assertEquals(3,mainFrame.getGameBoard().getColSelected());
             assertEquals(Cell.S, board.getCell(mainFrame.getGameBoard().getRowSelected(), mainFrame.getGameBoard().getColSelected()));
             
-            robot.mouseMove(400, 256); // cell  3,4
+            robot.mouseMove(mainFrame.getX()+400, mainFrame.getY()+256); // cell  3,4
             mainFrame.getS2().setSelected(true);
 			Thread.sleep(500);
 			robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);

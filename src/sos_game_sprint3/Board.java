@@ -22,8 +22,7 @@ public class Board {
 	private Turn turn, lastTurn;
 	private int availableCells;
 	private boolean recording;
-	
-	//private char turn = 'B';
+	private Move latestMovePosition;
 
 	public Board() {
 		this.size = DEFAULT_SIZE;
@@ -47,6 +46,8 @@ public class Board {
 		isPlaying = true;
 		blueWinLines = new ArrayList<WinLinesData>();
 		redWinLines = new ArrayList<WinLinesData>();
+		latestMovePosition = new Move(-1,-1,'s');
+		lastTurn = Turn.R; // because the starting turn is blue. Need this for thread player work correctly
 		//gameStatus="Let's play";
 	}
 	
@@ -88,6 +89,7 @@ public class Board {
 	}
 	
 	public boolean makeMove(int row, int column) {
+		latestMovePosition = new Move(row, column, 's'); // use to draw color red or blue on newest move
 		gameStatus = "playing...";
 		if (row >= 0 && row < size && column >= 0 && column < size && grid[row][column] == Cell.E) {
 			if(recording) {
@@ -124,20 +126,11 @@ public class Board {
 			}
 			return true;	
 		}else return false;
-		//System.out.println(row+" "+column);
 	}
 	
 	public boolean hasScored(int row, int col, Turn turn) {
 		boolean isScore = false;
 		if(grid[row][col] == Cell.S) {
-//			if(sosCheck(row,col,row-1,col-1,row-2,col-2,turn)||sosCheck(row,col,row-1,col,row-2,col,turn))
-//				return true;
-//			else if(sosCheck(row,col,row+1,col+1,row+2,col+2,turn)||sosCheck(row,col,row,col+1,row,col+2,turn))
-//				return true;
-//			else if(sosCheck(row,col,row+1,col+1,row+2,col+2,turn)||sosCheck(row,col,row+1,col,row+2,col,turn))
-//				return true;
-//			else if(sosCheck(row,col,row+1,col-1,row+2,col-2,turn)||sosCheck(row,col,row,col-1,row,col-2,turn))
-//				return true;
 			if(sosCheck(row,col,row-1,col-1,row-2,col-2,turn))
 				isScore = true;
 			if(sosCheck(row,col,row-1,col,row-2,col,turn))
@@ -171,11 +164,12 @@ public class Board {
 	public boolean sosCheck(int row1, int col1, int row2, int col2, int row3, int col3, Turn turn) {
 		try {
 			if(grid[row1][col1] == Cell.S && grid[row2][col2] == Cell.O && grid[row3][col3] == Cell.S) {
-				if(turn == Turn.B) {
-					//System.out.println(row1 + " "+ col1 + " "+ row3 + " "+ col3);
-					blueWinLines.add(new WinLinesData(row1,col1,row3,col3));
+				WinLinesData newWinLine = new WinLinesData(row1,col1,row3,col3);
+				if(turn == Turn.B && !blueWinLines.contains(newWinLine)) {
+					blueWinLines.add(newWinLine);
 				}
-				else redWinLines.add(new WinLinesData(row1,col1,row3,col3));
+				else if(turn == Turn.R && !redWinLines.contains(newWinLine))
+					redWinLines.add(new WinLinesData(row1,col1,row3,col3));
 				return true;
 			}
 			else return false;
@@ -225,9 +219,8 @@ public class Board {
 		}
 	}
 	
+	public Move getLatestMovePosition() {   // to draw it blue if the blue player place it
+		return latestMovePosition;			// or draw it red if the red player place it
+	}
 	
-//	public boolean SosCheck(int row1, int col1, int row2, int col2, int row3, int col3) {
-//		
-//		return false;
-//	}
 }

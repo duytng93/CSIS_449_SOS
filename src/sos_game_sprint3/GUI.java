@@ -4,9 +4,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -32,8 +34,6 @@ public class GUI extends JFrame {
 	public static final int SYMBOL_STROKE_WIDTH = 5; 
 
 	public Font default_font;
-//	private int CANVAS_WIDTH;
-//	private int CANVAS_HEIGHT;
 
 	private GameBoardCanvas gameBoardCanvas; 
 	private Board board;
@@ -70,6 +70,9 @@ public class GUI extends JFrame {
 	JButton recordButton;
 	JButton replayButton;
 	JLabel turnLabel;
+	
+	public ComputerPlayer computerRed, computerBlue;
+	public Thread computerRedThread, computerBlueThread;
 	
 	public GUI(Board board) {
 		this.board = board;
@@ -124,6 +127,10 @@ public class GUI extends JFrame {
 		contentPane.add(southPanel,BorderLayout.SOUTH);
 		contentPane.add(gameBoardCanvas, BorderLayout.CENTER);
 		
+		computerRed = new ComputerPlayer(board,this,"red");
+		computerBlue = new ComputerPlayer(board,this,"blue");
+		computerRedThread = new Thread(computerRed);
+		computerBlueThread = new Thread(computerBlue);
 	}
 	
 	public void setNorthPanelContent() {
@@ -189,8 +196,6 @@ public class GUI extends JFrame {
 							generalGameRadio.setEnabled(true);
 							//board.isPlaying = false;
 							showMessage("Let's play!",false);
-//							System.out.println(getWidth());
-//							System.out.print(getHeight());
 						}
 					}
 					catch(Exception e1) {
@@ -202,6 +207,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+					//comp_1.start();
 				if(board.isPlaying && board.getAvailableCells()<board.getBoardSize()*board.getBoardSize()) {
 					int ans = JOptionPane.showConfirmDialog(null,"Are you sure to start a new game?","",JOptionPane.YES_NO_OPTION);
 					if(ans == 0) 
@@ -241,6 +247,16 @@ public class GUI extends JFrame {
 		humanRadio1.setFont(new Font(redPlayer.getFont().getFamily(), Font.BOLD,20));
 		computerRadio1 = new JRadioButton("Computer");
 		computerRadio1.setFont(new Font(redPlayer.getFont().getFamily(), Font.BOLD,20));
+		computerRadio1.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED)
+					(new Thread (computerRed)).start();
+					//computerRedThread.start();
+				
+			}
+		});
 		ButtonGroup humanComputerGroup1 = new ButtonGroup();
 		humanComputerGroup1.add(humanRadio1);
 		humanComputerGroup1.add(computerRadio1);
@@ -284,6 +300,13 @@ public class GUI extends JFrame {
 		humanRadio2.setFont(new Font(bluePlayer.getFont().getFamily(), Font.BOLD,20));
 		computerRadio2 = new JRadioButton("Computer");
 		computerRadio2.setFont(new Font(bluePlayer.getFont().getFamily(), Font.BOLD,20));
+		computerRadio2.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED)
+					(new Thread(computerBlue)).start();
+			}
+		});
 		ButtonGroup humanComputerGroup2 = new ButtonGroup();
 		humanComputerGroup2.add(humanRadio2);
 		humanComputerGroup2.add(computerRadio2);
@@ -373,6 +396,10 @@ public class GUI extends JFrame {
 									O2.setSelected(true);
 								}
 								board.makeMove(move.getRow(), move.getCol());
+								if(board.getTurn() == Turn.B)
+									turnLabel.setBackground(Color.blue);
+								else
+									turnLabel.setBackground(Color.red);
 								blueScore.setText(String.valueOf(board.blueWinLines.size()));
 								redScore.setText(String.valueOf(board.redWinLines.size()));
 								repaint();
@@ -419,6 +446,7 @@ public class GUI extends JFrame {
 							blueScore.setText(String.valueOf(board.blueWinLines.size()));
 							redScore.setText(String.valueOf(board.redWinLines.size()));
 							repaint(); 
+							
 						}
 							
 					}	
@@ -468,7 +496,8 @@ public class GUI extends JFrame {
 			g2d.setColor(Color.black);
 			for (int row = 0; row < board.getBoardSize(); ++row) {
 				for (int col = 0; col < board.getBoardSize(); ++col) {
-					if(row == rowSelected && col == colSelected) {
+					Move latestMovePosition = board.getLatestMovePosition();
+					if(row == latestMovePosition.getRow() && col == latestMovePosition.getCol()) {
 						if(board.getLastTurn()==Turn.B)
 							g2d.setColor(Color.blue);
 						else g2d.setColor(Color.red);
@@ -483,6 +512,8 @@ public class GUI extends JFrame {
 					}
 				}
 			}
+//			rowSelected = -1;
+//			colSelected = -1;
 		}
 		
 		//test draw red win line
@@ -572,5 +603,9 @@ public class GUI extends JFrame {
 	}
 	public JLabel getAccouncementLabel() {
 		return announcementLabel;
+	}
+	
+	public JLabel getTurnLabel() {
+		return turnLabel;
 	}
 }

@@ -20,7 +20,7 @@ public class Board {
 	public Board() {
 		this.size = DEFAULT_SIZE;
 		grid = new Cell[size][size];
-		gameType = GameType.Simple;
+		gameType = GameType.General;
 		initBoard();
 	}
 	
@@ -72,5 +72,9 @@ public class Board {
 	public boolean scoredPoint() {
 		// check 
 		return false;
+	}
+	
+	public GameType getGameType() {
+		return gameType;
 	}
 }
