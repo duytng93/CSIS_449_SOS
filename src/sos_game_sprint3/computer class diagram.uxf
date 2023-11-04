@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>170</y>
+      <w>380</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>sos_game_sprint3::ComputerPlayer
+--
+-board: Board
+-gui: GUI
+-color: String
+-nextMove_SorO: char
++stop = new AtomicBoolean(false): AtomicBoolean
+--
++ComputerPlayer(Board board, GUI gui, String color): ctor
++run(): void
+-makeAutoMove(): void
+-makeWinningMove(): boolean
+-makeRandomMove(): void
++S_SCheck(int row1, int col1, int row2, int col2): boolean
++SO_Check(int row1, int col1, int row2, int col2): boolean
++finWinMove(): Move
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>730</x>
+      <y>20</y>
+      <w>80</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Interface
+--
+Operation1
+Operation2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>220</x>
+      <y>20</y>
+      <w>80</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Runnable
+--
+run()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>250</x>
+      <y>100</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+</diagram>

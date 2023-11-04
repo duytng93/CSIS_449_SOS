@@ -20,13 +20,7 @@ public class ComputerPlayer implements Runnable{
 		try {
 			while(!stop.get()) {
 				
-				//Thread.sleep(1000); 
-				/*
-				 * if(stop) { System.out.print("thread "+color+" is stop\n"); break; }
-				 */
-				//System.out.print(board.isPlaying);	
 				if(color == "red") {
-					//need to wait a bit to make sure the turn is updated after each move
 					Thread.sleep(500);
 					if(board.getTurn() == Turn.R) {
 						Thread.sleep(1000);
@@ -34,9 +28,7 @@ public class ComputerPlayer implements Runnable{
 						makeAutoMove();
 					}
 				}else {
-					//need to wait a bit to make sure the turn is updated after each move
 					Thread.sleep(500);
-					//System.out.println(board.getTurn());
 					if(board.getTurn() == Turn.B) {
 						Thread.sleep(1000);
 						System.out.print("thread "+color+" made a move\n");
@@ -47,7 +39,6 @@ public class ComputerPlayer implements Runnable{
 				gui.getRedScore().setText(String.valueOf(board.redWinLines.size()));
 				gui.showMessage(board.gameStatus, false);
 				gui.repaint();
-				//System.out.print("last turn " +board.getLastTurn().toString());
 				if(board.getTurn() == Turn.B)
 					gui.getTurnLabel().setBackground(Color.blue);
 				else
