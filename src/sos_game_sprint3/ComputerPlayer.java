@@ -2,6 +2,7 @@ package sos_game_sprint3;
 
 import java.awt.Color;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import sos_game_sprint3.Board.Cell;
 import sos_game_sprint3.Board.Move;
@@ -13,23 +14,23 @@ public class ComputerPlayer implements Runnable{
 	private GUI gui;
 	private String color;
 	private char nextMove_SorO;
+	public static AtomicBoolean stop = new AtomicBoolean(false);
 	@Override
 	public void run() {
 		try {
-			while(true) {
-				// need to wait a second because at the when board.isPlaying change from true to false,
-				// the thread might miss that change and keep running
-				Thread.sleep(1000); 
-				if(!board.isPlaying) {
-					//System.out.print("thread "+color+" is stop\n");
-					break;
-				}
+			while(!stop.get()) {
+				
+				//Thread.sleep(1000); 
+				/*
+				 * if(stop) { System.out.print("thread "+color+" is stop\n"); break; }
+				 */
 				//System.out.print(board.isPlaying);	
 				if(color == "red") {
 					//need to wait a bit to make sure the turn is updated after each move
 					Thread.sleep(500);
 					if(board.getTurn() == Turn.R) {
 						Thread.sleep(1000);
+						System.out.print("thread "+color+" made a move\n");
 						makeAutoMove();
 					}
 				}else {
@@ -38,6 +39,7 @@ public class ComputerPlayer implements Runnable{
 					//System.out.println(board.getTurn());
 					if(board.getTurn() == Turn.B) {
 						Thread.sleep(1000);
+						System.out.print("thread "+color+" made a move\n");
 						makeAutoMove();
 					}
 				}
@@ -51,6 +53,7 @@ public class ComputerPlayer implements Runnable{
 				else
 					gui.getTurnLabel().setBackground(Color.red);
 			}
+			System.out.print("thread "+color+" is stop\n");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,12 +67,17 @@ public class ComputerPlayer implements Runnable{
 	}
 	
 	private void makeAutoMove() {
-		if (!makeWinningMove()) {
+		System.out.print("makeAutoMove called\n");
+		if(!stop.get()) {
+			if (!makeWinningMove()) {
 				makeRandomMove();
+			}
 		}
+		
 	}
 	
 	private boolean makeWinningMove() {
+		System.out.print("makeWinningMove called\n");
 		Move nextWinMove = finWinMove();
 		if(nextWinMove.getCol() == -1)
 			return false;
@@ -87,12 +95,16 @@ public class ComputerPlayer implements Runnable{
 				else
 					gui.getO2().setSelected(true);
 			}
+			if(!stop.get())
 			board.makeMove(nextWinMove.getRow(), nextWinMove.getCol());
 			return true;
 		}
 	}
 	
 	private void makeRandomMove() {
+		System.out.print("makeRandomMove called\n");
+		Move nextWinMove = finWinMove();
+		boolean success = false;
 		Random random = new Random();
 		boolean S_move = random.nextBoolean();
 		if(color == "red") {
@@ -113,7 +125,10 @@ public class ComputerPlayer implements Runnable{
 			nextMove = random.nextInt(board.getBoardSize()*board.getBoardSize());
 			nextMove_row =  nextMove/board.getBoardSize();
 			nextMove_column = nextMove%board.getBoardSize();
-		}while (!board.makeMove(nextMove_row, nextMove_column));
+			if(!stop.get()) {
+				success = board.makeMove(nextMove_row, nextMove_column);
+			}
+		}while (!success);
 	}
 	
 	public boolean S_SCheck(int row1, int col1, int row2, int col2) {

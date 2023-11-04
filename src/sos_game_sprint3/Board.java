@@ -44,11 +44,12 @@ public class Board {
 		recording = false;
 		recordedMoves = new ArrayList<Move>();
 		isPlaying = true;
+		
 		blueWinLines = new ArrayList<WinLinesData>();
 		redWinLines = new ArrayList<WinLinesData>();
 		latestMovePosition = new Move(-1,-1,'s');
 		lastTurn = Turn.R; // because the starting turn is blue. Need this for thread player work correctly
-		//gameStatus="Let's play";
+		gameStatus="Let's play!";
 	}
 	
 	public Cell getCell(int row, int column) {
@@ -109,6 +110,7 @@ public class Board {
 				if(gameType==GameType.Simple) {
 					gameStatus = (turn==Turn.B)? "Blue is the winner!!!" : "Red is the winner!!!";
 					isPlaying = false;
+					ComputerPlayer.stop.set(true);
 				}
 			}
 			if(availableCells==0) {
@@ -123,6 +125,7 @@ public class Board {
 						gameStatus = "Red is the winner!!!";
 				}
 				isPlaying = false;
+				ComputerPlayer.stop.set(true);
 			}
 			return true;	
 		}else return false;

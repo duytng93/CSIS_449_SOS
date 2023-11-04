@@ -171,6 +171,7 @@ public class GUI extends JFrame {
 							//JOptionPane.showMessageDialog(null, "Please choose a number greater or equal 5!", "Board size too small",JOptionPane.INFORMATION_MESSAGE );
 							showMessage("Please enter a number greater than or equal 5!", true);
 						}else {
+							ComputerPlayer.stop.set(true);
 							board.setSize(newSize);
 							gameBoardCanvas.setSize(board.getBoardSize());
 							northPanel.setPreferredSize(new Dimension(CELL_SIZE * board.getBoardSize()+200,70));
@@ -251,8 +252,11 @@ public class GUI extends JFrame {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED)
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					ComputerPlayer.stop.set(false);
 					(new Thread (computerRed)).start();
+				}
+					
 					//computerRedThread.start();
 				
 			}
@@ -303,8 +307,11 @@ public class GUI extends JFrame {
 		computerRadio2.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED)
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					ComputerPlayer.stop.set(false);
 					(new Thread(computerBlue)).start();
+				}
+					
 			}
 		});
 		ButtonGroup humanComputerGroup2 = new ButtonGroup();
@@ -431,24 +438,28 @@ public class GUI extends JFrame {
 					if(board.isPlaying) {
 						rowSelected = e.getY() / CELL_SIZE;
 						colSelected = e.getX() / CELL_SIZE;
-						boolean sucess = board.makeMove(rowSelected, colSelected);
-						if(sucess) {
-							if(simpleGameRadio.isEnabled() && generalGameRadio.isEnabled())
-							{
-								simpleGameRadio.setEnabled(false);
-								generalGameRadio.setEnabled(false);
+						if((!computerRadio1.isSelected() && !computerRadio2.isSelected())||
+								(computerRadio1.isSelected() && !computerRadio2.isSelected() && board.getTurn() == Turn.B) ||
+								(computerRadio2.isSelected() && !computerRadio1.isSelected() && board.getTurn() == Turn.R)) 
+						{
+							boolean sucess = board.makeMove(rowSelected, colSelected);
+							if(sucess) {
+								if(simpleGameRadio.isEnabled() && generalGameRadio.isEnabled())
+								{
+									simpleGameRadio.setEnabled(false);
+									generalGameRadio.setEnabled(false);
+								}
+								showMessage(board.gameStatus,false);
+								if(board.getTurn() == Turn.B)
+									turnLabel.setBackground(Color.blue);
+								else
+									turnLabel.setBackground(Color.red);
+								blueScore.setText(String.valueOf(board.blueWinLines.size()));
+								redScore.setText(String.valueOf(board.redWinLines.size()));
+								repaint(); 
+								
 							}
-							showMessage(board.gameStatus,false);
-							if(board.getTurn() == Turn.B)
-								turnLabel.setBackground(Color.blue);
-							else
-								turnLabel.setBackground(Color.red);
-							blueScore.setText(String.valueOf(board.blueWinLines.size()));
-							redScore.setText(String.valueOf(board.redWinLines.size()));
-							repaint(); 
-							
 						}
-							
 					}	
 				}
 			});
@@ -607,5 +618,12 @@ public class GUI extends JFrame {
 	
 	public JLabel getTurnLabel() {
 		return turnLabel;
+	}
+	
+	public JRadioButton getCopmuterRadio1() {
+		return computerRadio1;
+	}
+	public JRadioButton getCopmuterRadio2() {
+		return computerRadio2;
 	}
 }
