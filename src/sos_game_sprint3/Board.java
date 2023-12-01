@@ -220,6 +220,7 @@ public class Board {
 		public char getSOrO() {
 			return sOrO;
 		}
+		
 	}
 	
 	public Move getLatestMovePosition() {   // to draw it blue if the blue player place it

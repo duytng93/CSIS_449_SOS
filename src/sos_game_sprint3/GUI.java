@@ -71,8 +71,12 @@ public class GUI extends JFrame {
 	JButton replayButton;
 	JLabel turnLabel;
 	
-	public ComputerPlayer computerRed, computerBlue;
-	public Thread computerRedThread, computerBlueThread;
+	//replay panel
+	JPanel replayPanel;
+	JComboBox saveGamesComboBox;
+	
+	private ComputerPlayer computerRed, computerBlue;
+	private Thread computerRedThread, computerBlueThread;
 	
 	public GUI(Board board) {
 		this.board = board;
@@ -126,6 +130,14 @@ public class GUI extends JFrame {
 		contentPane.add(northPanel,BorderLayout.NORTH);
 		contentPane.add(southPanel,BorderLayout.SOUTH);
 		contentPane.add(gameBoardCanvas, BorderLayout.CENTER);
+		
+		replayPanel = new JPanel();
+		replayPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
+		replayPanel.setPreferredSize(new Dimension(150,DEFAULT_CANVAS_SIDE));
+		String[] names = { "Select a saved game", "Geri", "Greg", "Jean",
+				"Kirk", "Phillip", "Susan" };
+		saveGamesComboBox = new JComboBox(names);
+		replayPanel.add(saveGamesComboBox);
 		
 		computerRed = new ComputerPlayer(board,this,"red");
 		computerBlue = new ComputerPlayer(board,this,"blue");
@@ -184,8 +196,14 @@ public class GUI extends JFrame {
 							board.initBoard();
 							humanRadio1.setSelected(true);
 							humanRadio2.setSelected(true);
+							humanRadio1.setEnabled(true);
+							humanRadio2.setEnabled(true);
 							S1.setSelected(true);
 							S2.setSelected(true);
+							S1.setEnabled(true);
+							O1.setEnabled(true);
+							S2.setEnabled(true);
+							O2.setEnabled(true);
 							turnLabel.setBackground(Color.blue);
 							blueScore.setText("0");
 							redScore.setText("0");
@@ -195,7 +213,6 @@ public class GUI extends JFrame {
 							recordButton.setEnabled(true);
 							simpleGameRadio.setEnabled(true);
 							generalGameRadio.setEnabled(true);
-							//board.isPlaying = false;
 							showMessage("Let's play!",false);
 						}
 					}
@@ -255,10 +272,10 @@ public class GUI extends JFrame {
 				if(e.getStateChange()==ItemEvent.SELECTED) {
 					ComputerPlayer.stop.set(false);
 					(new Thread (computerRed)).start();
+					humanRadio1.setEnabled(false);
+					S1.setEnabled(false);
+					O1.setEnabled(false);
 				}
-					
-					//computerRedThread.start();
-				
 			}
 		});
 		ButtonGroup humanComputerGroup1 = new ButtonGroup();
@@ -310,6 +327,9 @@ public class GUI extends JFrame {
 				if(e.getStateChange()==ItemEvent.SELECTED) {
 					ComputerPlayer.stop.set(false);
 					(new Thread(computerBlue)).start();
+					humanRadio2.setEnabled(false);
+					S2.setEnabled(false);
+					O2.setEnabled(false);
 				}
 					
 			}
@@ -370,56 +390,59 @@ public class GUI extends JFrame {
 		turnLabel.setHorizontalAlignment(JLabel.CENTER);
 		replayButton = new JButton("Replay");
 		replayButton.addActionListener((e)->{
-			if(board.isPlaying)
-				JOptionPane.showMessageDialog(null,"The game isn't over yet.", "Can't replay during game", JOptionPane.INFORMATION_MESSAGE);
-			else {
-				if(board.recordedMoves.size()>0) {
-					recordedMoves = new ArrayList<Move>(board.recordedMoves);
-					GameType lastGameType = board.gameType;
-					newGameButton.doClick();
-					if(lastGameType == GameType.Simple)
-						simpleGameRadio.setSelected(true);
-					else generalGameRadio.setSelected(true);
-					replayButton.setEnabled(false);
-					recordButton.setEnabled(false);
-					Thread childThread = new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							showMessage("Replaying...",false);
-							for(Move move : recordedMoves) {
-								try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								if(move.getSOrO() == 's')
-								{
-									S1.setSelected(true);
-									S2.setSelected(true);
-								}else {
-									O1.setSelected(true);
-									O2.setSelected(true);
-								}
-								board.makeMove(move.getRow(), move.getCol());
-								if(board.getTurn() == Turn.B)
-									turnLabel.setBackground(Color.blue);
-								else
-									turnLabel.setBackground(Color.red);
-								blueScore.setText(String.valueOf(board.blueWinLines.size()));
-								redScore.setText(String.valueOf(board.redWinLines.size()));
-								repaint();
-								
-							}
-							showMessage(board.gameStatus + " End replay.",false);
-						}
-					});
-					childThread.start();
-					
-				}else {JOptionPane.showMessageDialog(null,"Nothing to replay!", "Record did not start", JOptionPane.INFORMATION_MESSAGE);
-				}
-			}});
+//			if(board.isPlaying)
+//				JOptionPane.showMessageDialog(null,"The game isn't over yet.", "Can't replay during game", JOptionPane.INFORMATION_MESSAGE);
+//			else {
+//				if(board.recordedMoves.size()>0) {
+//					recordedMoves = new ArrayList<Move>(board.recordedMoves);
+//					GameType lastGameType = board.gameType;
+//					newGameButton.doClick();
+//					if(lastGameType == GameType.Simple)
+//						simpleGameRadio.setSelected(true);
+//					else generalGameRadio.setSelected(true);
+//					replayButton.setEnabled(false);
+//					recordButton.setEnabled(false);
+//					Thread childThread = new Thread(new Runnable() {
+//
+//						@Override
+//						public void run() {
+//							showMessage("Replaying...",false);
+//							for(Move move : recordedMoves) {
+//								try {
+//									Thread.sleep(1000);
+//								} catch (InterruptedException e1) {
+//									// TODO Auto-generated catch block
+//									e1.printStackTrace();
+//								}
+//								if(move.getSOrO() == 's')
+//								{
+//									S1.setSelected(true);
+//									S2.setSelected(true);
+//								}else {
+//									O1.setSelected(true);
+//									O2.setSelected(true);
+//								}
+//								board.makeMove(move.getRow(), move.getCol());
+//								if(board.getTurn() == Turn.B)
+//									turnLabel.setBackground(Color.blue);
+//								else
+//									turnLabel.setBackground(Color.red);
+//								blueScore.setText(String.valueOf(board.blueWinLines.size()));
+//								redScore.setText(String.valueOf(board.redWinLines.size()));
+//								repaint();
+//								
+//							}
+//							showMessage(board.gameStatus + " End replay.",false);
+//						}
+//					});
+//					childThread.start();
+//					
+//				}else {JOptionPane.showMessageDialog(null,"Nothing to replay!", "Record did not start", JOptionPane.INFORMATION_MESSAGE);
+//				}			
+//			}
+			JOptionPane.showMessageDialog(null, replayPanel,"Replay",JOptionPane.QUESTION_MESSAGE);
+			System.out.print(saveGamesComboBox.getSelectedItem());
+			});
 		southPanel.add(recordButton);
 		southPanel.add(turnLabel);
 		southPanel.add(replayButton);

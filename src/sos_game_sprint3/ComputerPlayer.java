@@ -1,6 +1,8 @@
 package sos_game_sprint3;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,14 +26,14 @@ public class ComputerPlayer implements Runnable{
 					Thread.sleep(500);
 					if(board.getTurn() == Turn.R) {
 						Thread.sleep(1000);
-						System.out.print("thread "+color+" made a move\n");
+						//System.out.print("thread "+color+" made a move\n");
 						makeAutoMove();
 					}
 				}else {
 					Thread.sleep(500);
 					if(board.getTurn() == Turn.B) {
 						Thread.sleep(1000);
-						System.out.print("thread "+color+" made a move\n");
+						//System.out.print("thread "+color+" made a move\n");
 						makeAutoMove();
 					}
 				}
@@ -44,7 +46,7 @@ public class ComputerPlayer implements Runnable{
 				else
 					gui.getTurnLabel().setBackground(Color.red);
 			}
-			System.out.print("thread "+color+" is stop\n");
+			//System.out.print("thread "+color+" is stop\n");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,18 +60,18 @@ public class ComputerPlayer implements Runnable{
 	}
 	
 	private void makeAutoMove() {
-		System.out.print("makeAutoMove called\n");
 		if(!stop.get()) {
 			if (!makeWinningMove()) {
-				makeRandomMove();
+				if(!makeDefenseMove())
+					makeRandomMove();
 			}
 		}
 		
 	}
 	
 	private boolean makeWinningMove() {
-		System.out.print("makeWinningMove called\n");
-		Move nextWinMove = finWinMove();
+		//System.out.print(color + " called makeWinningMove()\n");
+		Move nextWinMove = findWinMove();
 		if(nextWinMove.getCol() == -1)
 			return false;
 		else
@@ -87,14 +89,38 @@ public class ComputerPlayer implements Runnable{
 					gui.getO2().setSelected(true);
 			}
 			if(!stop.get())
-			board.makeMove(nextWinMove.getRow(), nextWinMove.getCol());
+				board.makeMove(nextWinMove.getRow(), nextWinMove.getCol());
+			return true;
+		}
+	}
+	
+	private boolean makeDefenseMove() {
+		//System.out.print(color + " called makeDefenseMove()\n");
+		Move nextDefenseMove = findDefenseMove();
+		if(nextDefenseMove.getCol() == -1)
+			return false;
+		else
+		{
+			if(color == "red") {
+				if(nextDefenseMove.getSOrO() == 's') 
+					gui.getS1().setSelected(true);
+				else
+					gui.getO1().setSelected(true);
+			}
+			else {
+				if(nextDefenseMove.getSOrO() == 's') 
+					gui.getS2().setSelected(true);
+				else
+					gui.getO2().setSelected(true);
+			}
+			if(!stop.get()) 
+				board.makeMove(nextDefenseMove.getRow(), nextDefenseMove.getCol());
 			return true;
 		}
 	}
 	
 	private void makeRandomMove() {
-		System.out.print("makeRandomMove called\n");
-		Move nextWinMove = finWinMove();
+		//System.out.print(color + " called makeRandomMove()\n");
 		boolean success = false;
 		Random random = new Random();
 		boolean S_move = random.nextBoolean();
@@ -122,7 +148,58 @@ public class ComputerPlayer implements Runnable{
 		}while (!success);
 	}
 	
-	public boolean S_SCheck(int row1, int col1, int row2, int col2) {
+	
+	private Move findDefenseMove() {
+		
+		ArrayList<Move> SafeMoveList = new ArrayList<>();
+		
+		for (int row = 0; row < board.getBoardSize(); ++row) {
+			for (int col = 0; col < board.getBoardSize(); ++col) {
+				if(board.getCell(row, col) == Cell.E) {
+					boolean couldBeS = true;
+					boolean couldBeO = true;
+					
+					if(board.getCell(row, col-1) == Cell.S && board.getCell(row, col+1) == Cell.E) couldBeO = false;
+					else if(board.getCell(row-1, col-1) == Cell.S && board.getCell(row+1, col+1) == Cell.E) couldBeO = false;
+					else if(board.getCell(row-1, col) == Cell.S && board.getCell(row+1, col) == Cell.E) couldBeO = false;
+					else if(board.getCell(row-1, col+1) == Cell.S && board.getCell(row+1, col-1) == Cell.E) couldBeO = false;
+					else if(board.getCell(row, col+1) == Cell.S && board.getCell(row, col-1) == Cell.E) couldBeO = false;
+					else if(board.getCell(row+1, col+1) == Cell.S && board.getCell(row-1, col-1) == Cell.E) couldBeO = false;
+					else if(board.getCell(row+1, col) == Cell.S && board.getCell(row-1, col) == Cell.E) couldBeO = false;
+					else if(board.getCell(row+1, col-1) == Cell.S && board.getCell(row-1, col+1) == Cell.E) couldBeO = false;
+					
+					if(board.getCell(row, col-1) == Cell.O && board.getCell(row, col-2) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-1, col-1) == Cell.O && board.getCell(row-2, col-2) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-1, col) == Cell.O && board.getCell(row-2, col) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-1, col+1) == Cell.O && board.getCell(row-2, col+2) == Cell.E) couldBeS = false;
+					else if(board.getCell(row, col+1) == Cell.O && board.getCell(row, col+2) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+1, col+1) == Cell.O && board.getCell(row+2, col+2) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+1, col) == Cell.O && board.getCell(row+2, col) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+1, col-1) == Cell.O && board.getCell(row+2, col-2) == Cell.E) couldBeS = false;
+					
+					if(board.getCell(row, col-2) == Cell.S && board.getCell(row, col-1) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-2, col-2) == Cell.S && board.getCell(row-1, col-1) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-2, col) == Cell.S && board.getCell(row-1, col) == Cell.E) couldBeS = false;
+					else if(board.getCell(row-2, col+2) == Cell.S && board.getCell(row-1, col+1) == Cell.E) couldBeS = false;
+					else if(board.getCell(row, col+2) == Cell.S && board.getCell(row, col+1) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+2, col+2) == Cell.S && board.getCell(row+1, col+1) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+2, col) == Cell.S && board.getCell(row+1, col) == Cell.E) couldBeS = false;
+					else if(board.getCell(row+2, col-2) == Cell.S && board.getCell(row+1, col-1) == Cell.E) couldBeS = false;
+					
+					if(couldBeS) SafeMoveList.add(board.new Move(row,col,'s'));
+					if(couldBeO) SafeMoveList.add(board.new Move(row,col,'o'));
+				}
+			}
+		}
+		// in case of can't find any defense move
+		if(SafeMoveList.size() == 0)
+			return board.new Move(-1,-1,'s');
+		else {
+			return SafeMoveList.get((new Random()).nextInt(0,SafeMoveList.size()));
+		}
+	}
+	
+	private boolean S_SCheck(int row1, int col1, int row2, int col2) {
 		try {
 			if(board.getCell(row1, col1) == Cell.S && board.getCell(row2, col2) == Cell.S ) {
 				nextMove_SorO = 'o';
@@ -134,7 +211,7 @@ public class ComputerPlayer implements Runnable{
 		}
 	}
 	
-	public boolean SO_Check(int row1, int col1, int row2, int col2) {
+	private boolean SO_Check(int row1, int col1, int row2, int col2) {
 		try {
 			if(board.getCell(row1, col1) == Cell.S && board.getCell(row2, col2) == Cell.O ) {
 				nextMove_SorO = 's';
@@ -146,7 +223,7 @@ public class ComputerPlayer implements Runnable{
 		}
 	}
 	
-	public Move finWinMove() {
+	private Move findWinMove() {
 		for (int row = 0; row < board.getBoardSize(); ++row) {
 			for (int col = 0; col < board.getBoardSize(); ++col) {
 				if(board.getCell(row, col) == Cell.E) {
